@@ -1,0 +1,21 @@
+# -*- mode: snippet -*-
+# name: FreezedJson
+# key: frzj
+# group: dart
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part '`(file-name-base (buffer-file-name))`.freezed.dart';
+part '`(file-name-base (buffer-file-name))`.g.dart';
+
+@freezed
+class ${1:Name} with _$$1 {
+  factory $1({
+    $2
+  }) = _$1;
+
+  factory $1.fromJson(Map<String, dynamic> json) =>
+    _$$1FromJson(json);
+}
