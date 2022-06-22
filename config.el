@@ -22,8 +22,12 @@
 ;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
 ;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
 ;;
-(setq doom-font (font-spec :family "JetBrains Mono" :size 12 :weight 'semi-bold)
-      doom-variable-pitch-font (font-spec :family "Noto Sans JP" :size 12))
+(setq doom-font (if (eq system-type 'gnu/linux)
+                    (font-spec :family "JetBrains Mono" :size 18 :weight 'semi-bold)
+                  (font-spec :family "JetBrains Mono" :size 12 :weight 'semi-bold))
+      doom-variable-pitch-font (if (eq system-type 'gnu/linux)
+                                   (font-spec :family "Noto Sans JP" :size 18)
+                                 (font-spec :family "Noto Sans JP" :size 12)))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
