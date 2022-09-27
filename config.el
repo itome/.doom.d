@@ -63,7 +63,7 @@
 
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-(setq-hook! 'web-mode-hook
+(setq-hook! web-mode-hook
   web-mode-code-indent-offset 2
   web-mode-enable-auto-quoting nil
   web-mode-css-indent-offset 2
@@ -82,6 +82,14 @@
         lsp-ui-doc-max-width 120
         lsp-ui-doc-max-height 12
         lsp-ui-doc-include-signature t))
+
+(after! lsp-dart
+  (setq lsp-dart-flutter-fringe-colors nil
+        +lsp-company-backends '(company-capf)
+        lsp-dart-closing-labels nil
+        lsp-dart-flutter-widget-guides nil
+        lsp-dart-main-code-lens nil
+        lsp-dart-test-code-lens nil))
 
 (map! :after treemacs
       :map treemacs-mode-map
