@@ -82,6 +82,7 @@
 
 (after! lsp-mode
   (setq lsp-signature-auto-activate nil
+        lsp-completion-provider :none
         lsp-signature-render-documentation nil))
 
 (after! lsp-ui
@@ -97,7 +98,6 @@
 
 (after! lsp-dart
   (setq lsp-dart-flutter-fringe-colors nil
-        +lsp-company-backends '(company-capf)
         lsp-dart-closing-labels nil
         lsp-dart-flutter-widget-guides nil
         lsp-dart-main-code-lens nil
@@ -143,9 +143,11 @@
   :hook (prog-mode . copilot-mode)
   :bind (("C-TAB" . 'copilot-accept-completion-by-word)
          ("C-<tab>" . 'copilot-accept-completion-by-word)
-         :map company-active-map
-         ("<tab>" . 'my-tab)
-         ("TAB" . 'my-tab)
-         :map company-mode-map
+         :map corfu-map
          ("<tab>" . 'my-tab)
          ("TAB" . 'my-tab)))
+
+;;; Faces
+(custom-set-faces!
+  `(corfu-annotations :slant oblique)
+  '(tree-sitter-hl-face:property :slant oblique))
