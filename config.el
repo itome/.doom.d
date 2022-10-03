@@ -32,7 +32,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-nord)
+(setq doom-theme 'doom-one)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -72,14 +72,6 @@
 (setq-hook! 'which-key-mode-hook
   which-key-idle-delay 0.5)
 
-(after! company
-  (setq company-idle-delay 0
-        company-transformers '(company-sort-by-occurrence company-sort-by-backend-importance)
-        company-format-margin-function #'company-text-icons-margin))
-
-(after! company-box
-  (setq company-tooltip-maximum-width 80))
-
 (after! lsp-mode
   (setq lsp-signature-auto-activate nil
         lsp-completion-provider :none
@@ -111,6 +103,14 @@
 
 (after! vertico
   (add-hook 'vertico-mode-hook #'vertico-multiform-mode))
+
+(after! doom-theme
+  (doom-themes-set-faces nil
+    '(corfu-default            :inherit 'tooltip)
+    '(corfu-current            :background selection :weight 'bold)
+    '(corfu-annotations        :foreground violet :distant-foreground bg)
+    '(corfu-echo               :foreground violet :distant-foreground bg)
+    '(corfu-bar                :inherit 'tooltip :background highlight)))
 
 (map! :after treemacs
       :map treemacs-mode-map
@@ -146,8 +146,3 @@
          :map corfu-map
          ("<tab>" . 'my-tab)
          ("TAB" . 'my-tab)))
-
-;;; Faces
-(custom-set-faces!
-  `(corfu-annotations :slant oblique)
-  '(tree-sitter-hl-face:property :slant oblique))
