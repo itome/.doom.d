@@ -74,13 +74,25 @@
 
 (after! company
   (setq company-idle-delay 0
+        company-transformers '(company-sort-by-occurrence company-sort-by-backend-importance)
         company-format-margin-function #'company-text-icons-margin))
+
+(after! company-box
+  (setq company-tooltip-maximum-width 80))
+
+(after! lsp-mode
+  (setq lsp-signature-auto-activate nil
+        lsp-signature-render-documentation nil))
 
 (after! lsp-ui
   (setq lsp-ui-doc-enable t
-        lsp-ui-doc-position 'top
-        lsp-ui-doc-max-width 120
-        lsp-ui-doc-max-height 12
+        lsp-ui-doc-show-with-cursor t
+        lsp-ui-doc-max-width 150
+        lsp-ui-doc-position 'at-point
+        lsp-ui-doc-border "transparent"
+        lsp-ui-doc-max-height 30
+        lsp-ui-doc-use-childframe t
+        lsp-ui-doc-use-webkit t
         lsp-ui-doc-include-signature t))
 
 (after! lsp-dart
@@ -90,6 +102,15 @@
         lsp-dart-flutter-widget-guides nil
         lsp-dart-main-code-lens nil
         lsp-dart-test-code-lens nil))
+
+(after! vertico-posframe
+  (setq vertico-posframe-parameters '((left-fringe . 8) (right-fringe . 8))
+        vertico-multiform-commands '((+default/search-buffer indexed)
+                                     (+default/search-project indexed)
+                                     (t posframe))))
+
+(after! vertico
+  (add-hook 'vertico-mode-hook #'vertico-multiform-mode))
 
 (map! :after treemacs
       :map treemacs-mode-map
