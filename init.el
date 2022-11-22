@@ -20,8 +20,8 @@
        ;;layout            ; auie,ctsrnm is the superior home row
 
        :completion
-       ;;(company +childframe)
-       (corfu +orderless +icons +minibuffer)
+       (company +childframe)
+       ;;(corfu +orderless +icons +minibuffer)
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
        ;;(ivy +icons +fuzzy +prescient +childframe)               ; a search engine for love and life
