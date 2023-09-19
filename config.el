@@ -23,8 +23,8 @@
 ;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
 ;;
 (setq doom-font (if (eq system-type 'gnu/linux)
-                    (font-spec :family "JetBrains Mono" :size 18 :weight 'semi-bold)
-                  (font-spec :family "JetBrains Mono" :size 12 :weight 'semi-bold))
+                    (font-spec :family "JetBrains Mono" :size 18 :weight 'semi-bold :line-height 1.3)
+                  (font-spec :family "JetBrains Mono" :size 12 :weight 'semi-bold :line-height 1.3))
       doom-variable-pitch-font (if (eq system-type 'gnu/linux)
                                    (font-spec :family "Noto Sans JP" :size 18)
                                  (font-spec :family "Noto Sans JP" :size 12)))
@@ -63,7 +63,10 @@
 
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-(setq-hook! web-mode-hook
+(setq-hook! '(web-mode-hook typescript-tsx-mode-hook vue-mode-hook)
+  web-mode-style-padding 0
+  web-mode-script-padding 0
+  web-mode-block-padding 0
   web-mode-code-indent-offset 2
   web-mode-enable-auto-quoting nil
   web-mode-css-indent-offset 2
@@ -72,32 +75,9 @@
 (setq-hook! 'which-key-mode-hook
   which-key-idle-delay 0.5)
 
-(after! company
-  (setq company-tooltip-maximum-width 40
-        company-tooltip-minimum-width 40))
-
-(after! lsp-mode
-  (setq lsp-signature-auto-activate nil
-        lsp-completion-provider :none
-        lsp-signature-render-documentation nil))
-
-(after! lsp-ui
-  (setq lsp-ui-doc-enable t
-        lsp-ui-doc-show-with-cursor t
-        lsp-ui-doc-max-width 150
-        lsp-ui-doc-position 'at-point
-        lsp-ui-doc-border "transparent"
-        lsp-ui-doc-max-height 30
-        lsp-ui-doc-use-childframe t
-        lsp-ui-doc-use-webkit t
-        lsp-ui-doc-include-signature t))
-
-(after! lsp-dart
-  (setq lsp-dart-flutter-fringe-colors nil
-        lsp-dart-closing-labels nil
-        lsp-dart-flutter-widget-guides nil
-        lsp-dart-main-code-lens nil
-        lsp-dart-test-code-lens nil))
+(after! corfu
+  (setq corfu-min-width 40
+        corfu-max-width 40))
 
 (after! vertico-posframe
   (setq vertico-posframe-parameters '((left-fringe . 8) (right-fringe . 8))
@@ -108,23 +88,14 @@
 (after! vertico
   (add-hook 'vertico-mode-hook #'vertico-multiform-mode))
 
-(after! doom-theme
-  (after! corfu
-    (doom-themes-set-faces nil
-      '(corfu-default            :inherit 'tooltip)
-      '(corfu-current            :background selection :weight 'bold)
-      '(corfu-annotations        :foreground violet :distant-foreground bg)
-      '(corfu-echo               :foreground violet :distant-foreground bg)
-      '(corfu-bar                :inherit 'tooltip :background highlight))))
-
 (map! :after treemacs
       :map treemacs-mode-map
       (:prefix-map ("p" . "project")
-       "d" #'treemacs-remove-project-from-workspace
-       "a" #'treemacs-add-project-to-workspace)
+                   "d" #'treemacs-remove-project-from-workspace
+                   "a" #'treemacs-add-project-to-workspace)
       (:prefix-map ("c" . "create")
-       "f" #'treemacs-create-file
-       "d" #'treemacs-create-dir))
+                   "f" #'treemacs-create-file
+                   "d" #'treemacs-create-dir))
 
 (map! :leader
       (:prefix-map ("c" . "code")
@@ -139,18 +110,38 @@
 (add-to-list 'auto-mode-alist '("\\.js\\'" . typescript-tsx-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . typescript-tsx-mode))
 
-(defun my-tab ()
-  (interactive)
-  (or (copilot-accept-completion)
-      (company-indent-or-complete-common nil)))
+(define-derived-mode vue-mode web-mode "Vue")
+(add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
+(add-hook 'vue-mode-local-vars-hook #'lsp! 'append)
+
+(defun vue-eglot-init-options ()
+  (let ((tsdk-path (expand-file-name
+                    "lib"
+                    (shell-command-to-string "npm list --global --parseable typescript | head -n1 | tr -d \"\n\""))))
+    `(:typescript (:tsdk ,tsdk-path
+                   :languageFeatures (:completion
+                                      (:defaultTagNameCase "both"
+                                       :defaultAttrNameCase "kebabCase"
+                                       :getDocumentNameCasesRequest nil
+                                       :getDocumentSelectionRequest nil)
+                                      :diagnostics
+                                      (:getDocumentVersionRequest nil))
+                   :documentFeatures (:documentFormatting
+                                      (:defaultPrintWidth 100
+                                       :getDocumentPrintWidthRequest nil)
+                                      :documentSymbol t
+                                      :documentColor t)))))
+(after! eglot
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+  (add-to-list 'eglot-server-programs
+               `(vue-mode . ("vue-language-server" "--stdio" :initializationOptions ,(vue-eglot-init-options))))
+  (add-to-list 'eglot-server-programs
+               `(typescript-tsx-mode . ("typescript-language-server" "--stdio"))))
 
 (use-package! copilot
   :hook (prog-mode . copilot-mode)
-  :bind (("C-TAB" . 'copilot-accept-completion-by-word)
-         ("C-<tab>" . 'copilot-accept-completion-by-word)
-         :map company-mode-map
-         ("<tab>" . 'my-tab)
-         ("TAB" . 'my-tab)
-         :map company-active-map
-         ("<tab>" . 'my-tab)
-         ("TAB" . 'my-tab)))
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word)))
