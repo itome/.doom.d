@@ -83,6 +83,8 @@
   (setq vertico-posframe-parameters '((left-fringe . 8) (right-fringe . 8))
         vertico-multiform-commands '((+default/search-buffer indexed)
                                      (+default/search-project indexed)
+                                     (xref-find-definitions indexed)
+                                     (xref-find-references indexed)
                                      (t posframe))))
 
 (after! vertico
