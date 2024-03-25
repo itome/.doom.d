@@ -116,7 +116,6 @@
       (:prefix-map ("c" . "code")
        :desc "Jump back" "b" #'xref-go-back))
 
-(setq-hook! 'treemacs-mode-hook treemacs-filewatch-mode t)
 (setq-hook! 'typescript-tsx-mode-hook +format-with-lsp nil)
 (setq-hook! 'typescript-mode-hook +format-with-lsp nil)
 
@@ -170,4 +169,5 @@
 
 (after! treemacs
   (custom-set-faces! '(doom-nord)
-    `(treemacs-window-background-face :background ,(doom-color 'bg-alt))))
+    `(treemacs-window-background-face :background ,(doom-color 'bg-alt))
+    `(treemacs-hl-line-face           :background ,(doom-color 'bg))))
